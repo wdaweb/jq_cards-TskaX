@@ -1,0 +1,328 @@
+body {
+    overflow: hidden;
+    margin: 0;
+}
+
+/* 卡片正反面 ------------------- */
+.card {
+    width: 80px;
+    height: 170px;
+    position: relative;
+    float: left;
+    margin: 10px;
+    transition-duration: 1s;
+    /* 設定子元素在 3D 空間內 */
+    transform-style: preserve-3d;
+}
+
+.card-front {
+    width: 100%;
+    height: 100%;
+    background-size: 130%;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    /* 設定隱藏背面 */
+    backface-visibility: hidden;
+    animation: fadeIn 4s linear 1;
+}
+
+.card-front-black {
+    width: 100%;
+    height: 100%;
+    background-image: url(./撲克牌/P0.png);
+    background-size: 130%;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    /* 設定隱藏背面 */
+    backface-visibility: hidden;
+    animation: fadeIn 3s linear 1;
+}
+
+.card-back {
+    width: 100%;
+    height: 100%;
+    background-image: url(./撲克牌/Pokemon_back.jpg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    transform: rotateY(180deg);
+    /* 設定隱藏背面 */
+    backface-visibility: hidden;
+    animation: fadeIn 4s linear 1;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.card-close {
+    transform: rotateY(180deg);
+}
+
+/* 卡片正反面 ------------------- */
+
+#game {
+    margin: auto;
+    width: 400px;
+}
+
+/* 開場動畫 */
+#open {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* 椰蛋樹、皮卡丘登場畫面 ----------- */
+#pikachu {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    animation: slideIn 1s linear 1;
+}
+
+#egg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    animation: slideIn2 1s linear 1;
+}
+
+@keyframes slideIn {
+    0% {
+        left: -165px;
+    }
+
+    100% {
+        left: 0;
+    }
+}
+
+@keyframes slideIn2 {
+    0% {
+        right: -165px;
+    }
+
+    100% {
+        right: 0;
+    }
+}
+
+/* 椰蛋樹、皮卡丘登場畫面 ----------- */
+
+/* 資訊欄 */
+.information {
+    border-radius: 10px 0px 10px 0px;
+    border: 3px solid brown;
+    width: 130px;
+    position: absolute;
+    background-color: bisque;
+}
+
+.information table {
+    width: 130px;
+}
+
+.monster-name {
+    text-align: left;
+}
+
+.monster-level {
+    text-align: right;
+}
+
+/* 血量 */
+.blood {
+    width: 80px;
+    height: 10px;
+    border-radius: 10px;
+    margin-left: 40px;
+    background-image: linear-gradient(90deg, red 0 100%, bisque 100% 100%);
+    display: inline-block;
+}
+
+.pika-blood {
+    margin-left: 20px;
+}
+
+/* 資訊欄動畫 */
+.pika-position {
+    position: absolute;
+    right: 0%;
+    bottom: 4%;
+    animation: slideIn3 1s linear 1;
+}
+
+@keyframes slideIn3 {
+    0% {
+        right: -50px;
+    }
+
+    100% {
+        right: 0px;
+    }
+}
+
+.egg-position {
+    position: absolute;
+    animation: slideIn4 1s linear 1;
+    left: 0px;
+}
+
+@keyframes slideIn4 {
+    0% {
+        left: -50px;
+    }
+
+    100% {
+        left: 0px;
+    }
+}
+
+a {
+    text-decoration: none;
+    color: orange;
+    display: block;
+}
+
+/* 轉場圖片 */
+.block {
+    width: 400px;
+    height: 713px;
+    background: url(./joey-pokemon_center.png);
+    position: absolute;
+    top: 32px;
+    left: 300px;
+}
+
+/* 技能資訊 */
+.skill {
+    border-radius: 10px;
+    border: 3px solid brown;
+    width: 140px;
+    height: 100px;
+    position: absolute;
+    background-color: bisque;
+    text-align: left;
+    line-height: 33px;
+    top: 10%;
+    padding-left: 10px;
+}
+
+/* 音樂開關 */
+#musicButton {
+    background-color: bisque;
+    border: 1px solid #eee;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    position: absolute;
+    right: 0%;
+    bottom: 20%;
+}
+
+#musicButton:hover {
+    background-color: #8d785f;
+}
+
+.musicButtonStop {
+    text-decoration: line-through;
+}
+
+#musicButton {
+    opacity: 0;
+}
+
+/* 皮卡丘攻擊特效 */
+@keyframes pikachu-attack {
+    0% {
+        left: 0%;
+        bottom: 0%;
+    }
+
+    50% {
+        left: 10%;
+        bottom: 10%;
+    }
+
+    100% {
+        left: 0%;
+        bottom: 0%;
+    }
+}
+
+@keyframes pikachu-attack-stop {
+    100% {
+        left: 0%;
+    }
+}
+
+/* 椰蛋樹攻擊特效 */
+@keyframes egg-attack-stop {
+    100% {
+        right: 0%;
+    }
+}
+
+
+@keyframes egg-attack {
+    0% {
+        right: 0%;
+        top: 0%;
+    }
+
+    50% {
+        right: 10%;
+        top: 10%;
+    }
+
+    100% {
+        right: 0%;
+        top: 0%;
+    }
+}
+
+/* 皮卡丘防禦特效 */
+@keyframes pikachu-defense {
+    0% {
+        left: 8%;
+    }
+
+    50% {
+        left: -5%;
+    }
+
+    100% {
+        left: 0%;
+
+    }
+}
+
+/* 椰蛋樹防禦特效 */
+@keyframes egg-defense {
+    0% {
+        right: 8%;
+    }
+
+    50% {
+        right: -5%;
+    }
+
+    100% {
+        right: 0%;
+
+    }
+}

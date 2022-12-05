@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./game-difficult.css">
+    <title>寶可夢翻牌</title>
+</head>
+
+<body>
+    <audio src="./戰鬥音樂.mp3" autoplay loop class="music"></audio>
+    <div id="game"></div>
+    <button id="musicButton">音樂</button>
+    <!-- 戰鬥畫面 -->
+    <img src="./turn-new.gif" alt="" id="open">
+    <script src="./jquery-3.6.1.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // 戰鬥音樂
+        const music = document.querySelector('.music');
+        const button = document.querySelector('#musicButton');
+        music.volume = 0.3;
+        button.onclick = () => {
+            if (music.paused) {
+                music.play();
+                $('#musicButton').removeClass('musicButtonStop');
+            } else {
+                music.pause();
+                $('#musicButton').addClass('musicButtonStop');
+            }
+        }
+        // 戰鬥介面
+        let mBlood = 100;
+        let pBlood = 100;
+        let pikaBloodText = 20;
+        setTimeout(() => {
+            $('#musicButton').css('opacity', '1')
+            $(`#open`).remove();
+            $('#game').append(`
+            <img src="./pikachu.png" id="pikachu">
+            <img src="./egg.png" id="egg">
+            <div class="information pika-position">
+                <table>
+                    <tr>
+                        <td class="monster-name">皮神</td>
+                        <td class="monster-level">Lv1</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="pika-blood blood"></div>
+                            <span class="pika-bloodText">20</span>
+                        </td>
+                    </tr>
+            </table>
+            </div>
+            <div class="information egg-position">
+                <table>
+                    <tr>
+                        <td class="monster-name">椰蛋樹</td>
+                        <td class="monster-level">Lv99</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="monster-blood blood"></div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            `)
+            // 產生卡片
+            for (let i = 0; i < 16; i++) {
+                $('#game').append(`
+                <div class="card card-close">
+                    <div class="card-front"></div>
+                    <div class="card-front-black"></div>
+                    <div class="card-back"></div>
+                </div>
+            `)
+            }
+            for (let i = 0; i < $('.card').length; i++) {
+                // 決定圖片並賦予編號
+                const num = i % ($('.card').length / 2) + 1;
+                $('.card').eq(i).find('.card-front').css('background-image', `url(./撲克牌/P${num}.png)`);
+                $('.card').eq(i).attr('data-num', num);
+                // 打散
+                const target = Math.round(Math.random() * ($('.card').length - 1));
+                $('.card').eq(target).insertAfter($('.card').eq(i));
+            }
+        }, 2500)
+        $('#game').on('click', '.card', function () {
+            // 翻一張牌
+            if ($('.card:not(.card-close)').length < 2 && $(this).hasClass('card-close') && !$(this).hasClass('card-ok')) {
+                $(this).removeClass('card-close');
+            }
+            // 將卡片翻回
+            else if ($('.card:not(.card-close)').length < 2 && !$(this).hasClass('card-close')) {
+                $(this).addClass('card-close');
+            }
+
+            // 如果翻兩張了
+            if ($('.card:not(.card-close)').length === 2) {
+                setTimeout(() => {
+                    $('.card-front-black').css('opacity', '0')
+                }, 500)
+                // 如果圖片一樣
+                if ($('.card:not(.card-close)').eq(0).attr('data-num') === $('.card:not(.card-close)').eq(1).attr('data-num')) {
+                    // 用 card-ok 標記已完成
+                    $('.card:not(.card-close)').addClass('card-ok');
+                    $('.card:not(.card-close)').fadeTo(1000, 0);
+                    // 皮卡丘攻擊動畫
+                    $('#pikachu').css('animation', 'pikachu-attack 0.5s linear 1')
+                    // 皮卡丘攻擊音效
+                    $('#musicButton').append(`<audio src="./attack.mp3" id="music_attack" autoplay></audio>`)
+                    //  椰蛋樹防禦動畫
+                    setTimeout(() => {
+                        $('#egg').css('animation', 'egg-defense 0.5s linear 1')
+                        // 血量減少
+                        mBlood -= 12.5;
+                        $('.monster-blood').css('background-image', `linear-gradient(90deg, red 0 ${mBlood}%, bisque ${mBlood}% 100%)`)
+                        // 血量如果一半了，啟動轉場動畫
+                        if (mBlood == 50) {
+                            music.pause();
+                            $('body').append(`
+                            <div class="skill">
+                                椰蛋樹使用了念力<br>
+                                召喚了喬伊小姐<br>
+                                改變了牌的布局
+                            </div>
+                        `)
+                            setTimeout(() => {
+                                // 播放轉場音樂
+                                $('body').append(`<audio src="./寶可夢中心手機鈴聲.mp4" autoplay class="heal"></audio>`);
+                                $('body').append(`<div class="block"></div>`);
+                                $('.card-ok').remove();
+                                // 將牌再次打散
+                                for (let i = 0; i < $('.card:not(.card-ok)').length; i++) {
+                                    const targetTwice = Math.round(Math.random() * ($('.card:not(.card-ok)').length - 1));
+                                    $('.card:not(.card-ok)').eq(targetTwice).insertAfter($('.card:not(.card-ok)').eq(i));
+                                }
+                            }, 1500);
+                            // 移除轉場動畫
+                            setTimeout(() => {
+                                $('.block').remove();
+                                $('.skill').remove();
+                                if (checkMusic != 0) music.play();
+                            }, 5000);
+                        }
+                    }, 500)
+                    // 猜對回血
+                    if (pBlood < 100) {
+                        pBlood += 10;
+                        pikaBloodText += 2;
+                        $('.pika-blood').css('background-image', `linear-gradient(90deg, red 0 ${pBlood}%, bisque ${pBlood}% 100%)`)
+                        $('.pika-bloodText').text(pikaBloodText);
+                    }
+                }
+                // 如果圖片不一樣
+                else if ($('.card:not(.card-close)').eq(0).attr('data-num') !== $('.card:not(.card-close)').eq(1).attr('data-num')) {
+                    // 椰蛋樹攻擊音效
+                    $('#musicButton').append(`<audio src="./attack.mp3" id="music_attack" autoplay></audio>`)
+                    // 椰蛋樹攻擊動畫
+                    $('#egg').css('animation', 'egg-attack 0.5s linear 1')
+                    setTimeout(() => {
+                        // 皮卡丘防禦動畫
+                        $('#pikachu').css('animation', 'pikachu-defense 0.5s linear 1')
+                        // 皮卡丘扣血
+                        pBlood -= 10;
+                        pikaBloodText -= 2;
+                        $('.pika-blood').css('background-image', `linear-gradient(90deg, red 0 ${pBlood}%, bisque ${pBlood}% 100%)`)
+                        $('.pika-bloodText').text(pikaBloodText);
+                        // 如果皮卡丘血量歸零
+                        if (pBlood == 0) {
+                            Swal.fire({
+                                imageUrl: './egg_gif.gif',
+                                title: '皮神死了',
+                                confirmButtonText: '<a href="./main.html">修練25年後再來</a>'
+                            })
+                        }
+                    }, 500)
+                }
+                // 圖片不一樣將卡片翻回來
+                setTimeout(() => {
+                    // 攻擊音效移除
+                    $('#music_attack').remove();
+                    // 皮卡丘攻擊動畫初始化
+                    $('#pikachu').css('animation', 'pikachu-attack-stop')
+                    // 椰蛋樹攻擊動畫初始化
+                    $('#egg').css('animation', 'egg-attack-stop')
+                    // 將牌遮罩
+                    $('.card-front-black').css('opacity', '1')
+                    $('.card:not(.card-close)').addClass('card-close');
+                    // 如果卡片猜完了
+                    if ($('.card-ok').length === $('.card').length) {
+                        Swal.fire({
+                            imageUrl: 'egg-medal.png',
+                            title: '恭喜',
+                            text: '獲得了椰蛋數道館的椰蛋勳章',
+                            confirmButtonText: '<a href="./main.html">再玩一次</a>'
+                        })
+                        music.pause();
+                        // 勝利音樂
+                        $('#game').append(`<audio src="./win.mp3" id="music_win" autoplay loop></audio>`)
+                    }
+                }, 1000)
+                // 音樂播放設定
+                if ($('#music_win').paused) {
+                    $('#music_win').play();
+                } else {
+                    $('#music_win').pause();
+                }
+                if ($('#music_attack').paused) {
+                    $('#music_attack').play();
+                } else {
+                    $('#music_attack').pause();
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
